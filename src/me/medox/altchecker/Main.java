@@ -55,15 +55,20 @@ public class Main extends Application implements Initializable {
     private static boolean isChecking;
 
     /**
+     * 1.kupf
      * Window
+     * 2.alu
      */
     private static Group group;
     private static Stage stage;
     private static Scene scene;
     private static Parent root;
 
+
     /**
+     * 1.gol
      * drag
+     * 2.Calci
      */
     private static double initX = 0;
     private static double initY = 0;
@@ -73,10 +78,19 @@ public class Main extends Application implements Initializable {
     }
 
 
+    /**
+     *
+     * 1.silve
+     * @param stage_null
+     * 2.Magnesi
+     * @throws Exception
+     * 2.Zin
+     */
+
     @Override
     public void start(Stage stage_null) throws Exception {
         stage = new Stage(StageStyle.UNDECORATED);
-        root = FXMLLoader.load(getClass().getResource("me/medox/altchecker/assets/Gui.fxml"));
+        root = FXMLLoader.load(getClass().getResource("assets/Gui.fxml"));
         group = new Group(root);
         scene = new Scene(group);
         stage.setScene(scene);
@@ -113,7 +127,7 @@ public class Main extends Application implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        InputStream inputStream = getClass().getResourceAsStream("serverIPs.txt");
+        InputStream inputStream = getClass().getResourceAsStream("assets/serverIPs.txt");
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         String line;
         ArrayList<String> allIPs = new ArrayList<>();
