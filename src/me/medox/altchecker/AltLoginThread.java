@@ -32,10 +32,7 @@ public class AltLoginThread implements Runnable {
     private Label mojangBannedAltsTextField;
     private Label bannedAltsTextField;
 
-    public AltLoginThread(String serverIP, Label workingAltsTextField, Label mojangBannedAltsTextField,
-                          Label bannedAltsTextField, boolean useProxy,
-                          ArrayList<String> allAlts, ArrayList<String> allProxyIPs, ArrayList<Integer> allProxyPorts,
-                          JFXTextArea altField, int currentAlt, int currentProxy) {
+    public AltLoginThread(String serverIP, Label workingAltsTextField, Label mojangBannedAltsTextField, Label bannedAltsTextField, boolean useProxy, ArrayList<String> allAlts, ArrayList<String> allProxyIPs, ArrayList<Integer> allProxyPorts, JFXTextArea altField, int currentAlt, int currentProxy) {
         this.useProxy = useProxy;
         this.allAlts = allAlts;
         this.allProxyIPs = allProxyIPs;
