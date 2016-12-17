@@ -8,7 +8,7 @@ The Project is very young and we are working currently to make it better
 
 
 ***About us***
-We are trying to give you the best design for our projects, and to find the best algorithm 
+We are trying to give you the best design for our projects and to find the best algorithm 
 
 ---
 
