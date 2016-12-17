@@ -1,4 +1,4 @@
-package me.medox.altchecker.me.medox.altchecker.assets;
+package me.medox.altchecker.other;
 
 import com.jfoenix.controls.JFXTextField;
 import javafx.stage.FileChooser;

@@ -1,30 +1,26 @@
 package me.medox.altchecker;
 
-import ch.darknight.Check;
-import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.stage.FileChooser;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
-import me.medox.altchecker.me.medox.altchecker.assets.Util;
-import net.minecraft.util.Session;
+import me.medox.altchecker.other.Util;
 import org.controlsfx.control.textfield.TextFields;
 
 import javax.swing.*;
-import java.applet.Applet;
 import java.io.*;
-import java.net.Proxy;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -41,8 +37,6 @@ public class Main extends Application implements Initializable {
     @FXML
     private JFXTextField serverTextField;
     @FXML
-    public JFXCheckBox useProxyList;
-    @FXML
     public JFXTextArea altArea;
     @FXML
     public Label workingAltsTextField;
@@ -58,6 +52,21 @@ public class Main extends Application implements Initializable {
     private static ArrayList<String> allAlts = new ArrayList<>();
     private static ArrayList<String> allProxyIPs = new ArrayList<>();
     private static ArrayList<Integer> allProxyPorts = new ArrayList<>();
+    private static boolean isChecking;
+
+    /**
+     * Window
+     */
+    private static Group group;
+    private static Stage stage;
+    private static Scene scene;
+    private static Parent root;
+
+    /**
+     * drag
+     */
+    private static double initX = 0;
+    private static double initY = 0;
 
     public static void main(String[] args) {
         launch();
@@ -65,9 +74,11 @@ public class Main extends Application implements Initializable {
 
 
     @Override
-    public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("Gui.fxml"));
-        Scene scene = new Scene(root);
+    public void start(Stage stage_null) throws Exception {
+        stage = new Stage(StageStyle.UNDECORATED);
+        root = FXMLLoader.load(getClass().getResource("me/medox/altchecker/assets/Gui.fxml"));
+        group = new Group(root);
+        scene = new Scene(group);
         stage.setScene(scene);
         stage.setTitle("AltChecker");
         stage.setResizable(false);
@@ -78,6 +89,26 @@ public class Main extends Application implements Initializable {
             }
         });
         stage.show();
+        setDraggable();
+    }
+
+    private void setDraggable() {
+
+        group.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                initX = event.getScreenX() - stage.getX();
+                initY = event.getScreenY() - stage.getY();
+            }
+        });
+        group.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                stage.setX(event.getScreenX() - initX);
+                stage.setY(event.getScreenY() - initY);
+            }
+        });
+        group.setVisible(true);
     }
 
     @Override
@@ -119,12 +150,10 @@ public class Main extends Application implements Initializable {
             bannedAltsTextField.setText("0");
             allAlts.clear();
             addAllAlts();
-            if (useProxyList.isSelected()) {
-                addAllProxys();
-            }
+            addAllProxys();
             currentAlt = 0;
             for (int i = 0; i < Integer.valueOf(threadsTextField.getText()); i++) {
-                new Thread(new AltLoginThread(serverTextField.getText(), workingAltsTextField, mojangBannedAltsTextField, bannedAltsTextField, useProxyList.isSelected(), allAlts, allProxyIPs, allProxyPorts, altArea, currentAlt, currentProxy)).start();
+                new Thread(new AltLoginThread(serverTextField.getText(), workingAltsTextField, mojangBannedAltsTextField, bannedAltsTextField, true, allAlts, allProxyIPs, allProxyPorts, altArea, currentAlt, currentProxy)).start();
                 if (currentAlt <= allAlts.size()) {
                     currentAlt++;
                 }
@@ -133,10 +162,8 @@ public class Main extends Application implements Initializable {
                 } else {
                     currentProxy = 0;
                 }
-                if (i == allAlts.size()) {
-                    System.out.println("Finsished!");
-                }
             }
+            isChecking = false;
         }
     }
 
@@ -175,16 +202,29 @@ public class Main extends Application implements Initializable {
         }
     }
 
+    public void close(ActionEvent event){
+        System.exit(0);
+    }
+
     public boolean canCheck() {
         if (altListTextField.getText().equals("")) {
             Util.showPopUp("Please add an Alt-List");
             return false;
         }
-        if (useProxyList.isSelected() && proxyListTextField.getText().equals("")) {
+        if (proxyListTextField.getText().equals("")) {
             Util.showPopUp("Add a Proxy-List or uncheck 'Use Proxy List'");
             return false;
         }
-        return true;
+        if(serverTextField.getText().equals("")){
+            Util.showPopUp("Select a Server!");
+            return false;
+        }
+        if(!isChecking){
+            return true;
+        }else{
+            Util.showPopUp("Already Checking!");
+            return false;
+        }
     }
 
 }
