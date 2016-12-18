@@ -39,46 +39,34 @@ public class ProxyController {
     public ProgressIndicator progressBar;
 
     public void check(ActionEvent event) {
+        if(checking){
+            Util.showPopUp("Already Checking!");
+            return;
+        }
         try {
-            ArrayList<String> list = getAllProxys(new File(inFile.getText()));
-
-            checking = true;
             if (!inFile.getText().equals("") && !outFile.getText().equals("")) {
-                int threads = (int) threadSlider.getValue();
-                for(int i = 1; i <= threads; i++){
-                    if(i > list.size()){
-                        return;
-                    }
-                    System.out.println("Checking(Thread-" + i + "): " + list.get(i));
-                    new Thread(new ProxyChecker(new File(inFile.getText()), progressBar, 80 , outFile, i, list.get(i))).start();
+                checking = true;
+                progressBar.setProgress(0);
+                ArrayList<String> proxies;
+                ProxyChecker proxyChecker = new ProxyChecker(new File(inFile.getText()), new File(outFile.getText()) , progressBar);
+                proxies = proxyChecker.getWorkingProxies();
+                PrintWriter writer = new PrintWriter(outFile.getText());
+                for(int i = 0; i < proxies.size(); i++){
+                    writer.println(proxies.get(i));
                 }
+                writer.flush();
+                writer.close();
+                checking = false;
             }else{
                 Util.showPopUp("Select a Proxy List and an Output Directory");
                 return;
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
 
-    private ArrayList<String> getAllProxys(File file){
-        ArrayList<String> list = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            while((line = reader.readLine()) != null){
-                if(line.contains(":") && line.contains(".")){
-                    list.add(line);
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
 
     public void addInFile(ActionEvent event){
         JFileChooser chooser = new JFileChooser();

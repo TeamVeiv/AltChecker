@@ -14,48 +14,75 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by v3v on 17.12.16.
  */
-public class ProxyChecker implements Runnable {
+public class ProxyChecker {
 
     private File file;
+    private File savePath;
     private ProgressIndicator progressIndicator;
-    private int allProxys;
-    private JFXTextField toSave;
-    private int toCheck;
-    private String proxy;
 
-    public ProxyChecker(File file, ProgressIndicator progressIndicator, int allProxys, JFXTextField toSave, int toCheck, String proxy) {
+    private static ExecutorService threadPool;
+
+    public ProxyChecker(File file, File savePath, ProgressIndicator progressIndicator) {
         this.file = file;
         this.progressIndicator = progressIndicator;
-        this.allProxys = allProxys;
-        this.toSave = toSave;
-        this.toCheck = toCheck;
-        this.proxy = proxy;
     }
 
-    public void getWorkingProxies() {
+    public ArrayList<String> getWorkingProxies() throws FileNotFoundException {
+        double all = getAllProxys(file).size();
+        System.out.println("All Proxies: " + all);
+        threadPool = Executors.newFixedThreadPool(5000);
         ArrayList<String> list = new ArrayList<>();
-        if (proxy.contains(":") && proxy.contains(".")) {
-            if (checkProxy(proxy, 3000)) {
-                System.out.println(proxy);
-                list.add(proxy);
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressIndicator.setProgress(list.size() / allProxys);
-                        try {
-                            PrintWriter writer = new PrintWriter(new File(toSave.getText()));
-                            writer.println(proxy);
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                final String l = line;
+                threadPool.execute(() -> {
+                    if (l.contains(":") && l.contains(".")) {
+                        if (checkProxy(l, 2000)) {
+                            System.out.println("Found working Proxy : " + l);
+                            list.add(l);
+                            Platform.runLater(() -> {
+                                progressIndicator.setProgress(list.size() / all);
+                            });
                         }
                     }
                 });
             }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        threadPool.shutdown();
+        try {
+            threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+        } catch (InterruptedException e3) {
+            e3.printStackTrace();
+        }
+
+        return list;
+    }
+
+    private ArrayList<String> getAllProxys(File file) {
+        ArrayList<String> list = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.contains(":") && line.contains(".")) {
+                    list.add(line);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
     private static boolean checkProxy(final String proxy, final int timeout) {
@@ -66,16 +93,11 @@ public class ProxyChecker implements Runnable {
         try {
             Proxy test = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(split[0], Integer.parseInt(split[1])));
             Socket sock = new Socket(test);
-            sock.connect(new InetSocketAddress("http://veiv.de/", 80), timeout);
-            System.out.println("Working: " + proxy);
+            sock.connect(new InetSocketAddress("alpha-centauri.tk", 80), timeout);
             return true;
         } catch (Exception e) {
             return false;
         }
     }
 
-    @Override
-    public void run() {
-        getWorkingProxies();
-    }
 }
