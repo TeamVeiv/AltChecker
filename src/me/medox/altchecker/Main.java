@@ -73,7 +73,6 @@ public class Main extends Application implements Initializable {
 
     private static ExecutorService threadPool;
 
-
     /**
      * Window
      */
@@ -181,6 +180,8 @@ public class Main extends Application implements Initializable {
                if(useProxy.isSelected()) {
                    addAllProxys();
                }
+               altArea.setText("");
+               bannedAltArea.setText("");
                workingAltsTextField.setText("0");
                mojangBannedAltsTextField.setText("0");
                bannedAltsTextField.setText("0");
@@ -240,11 +241,7 @@ public class Main extends Application implements Initializable {
                    e.printStackTrace();
                }
                threadPool.shutdown();
-               try {
-                   threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
-               } catch (InterruptedException e3) {
-                   e3.printStackTrace();
-               }
+
                isChecking = false;
            }
        };
@@ -253,6 +250,10 @@ public class Main extends Application implements Initializable {
     }
 
     public void stopChecking(ActionEvent event){
+       Runnable run = ()->{
+           threadPool.shutdownNow();
+       };
+       new Thread(run).start();
         thread.stop();
     }
 
