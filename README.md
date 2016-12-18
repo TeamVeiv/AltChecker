@@ -4,8 +4,7 @@ The Project is very young and we are working currently to make it better
 
 ---
 
-Picture
-<img src="http://veiv.de/AltChecker.png">
+<img src="http://veiv.de/AltChecker_.png">
 
 
 ***About us***
