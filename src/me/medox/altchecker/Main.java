@@ -172,9 +172,12 @@ public class Main extends Application implements Initializable {
     private static int banned;
     private static int mojangBanned;
 
+    public static Thread thread;
+
     public void check(ActionEvent event) {
        Runnable runnable = () ->{
            if (canCheck()) {
+               isChecking = true;
                if(useProxy.isSelected()) {
                    addAllProxys();
                }
@@ -242,9 +245,15 @@ public class Main extends Application implements Initializable {
                } catch (InterruptedException e3) {
                    e3.printStackTrace();
                }
+               isChecking = false;
            }
        };
-       new Thread(runnable).start();
+       thread = new Thread(runnable);
+       thread.start();
+    }
+
+    public void stopChecking(ActionEvent event){
+        thread.stop();
     }
 
     public void howToCheckWithoutProxies(ActionEvent event){
