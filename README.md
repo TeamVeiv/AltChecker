@@ -13,7 +13,8 @@ We are trying to give you the best design for our projects and to find the best 
 ---
 
 <h4>Download v.0.1</h4>
-<a href="veiv.de/AltChecker.zip" download>AltChecker v.01</a>
+<a href="http:/veiv.de/AltChecker.zip">v.01</a>
+
 
 
 <h5>Coder</h5>
