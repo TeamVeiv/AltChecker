@@ -4,11 +4,12 @@
 <?import com.jfoenix.controls.JFXSlider?>
 <?import com.jfoenix.controls.JFXTextArea?>
 <?import com.jfoenix.controls.JFXTextField?>
+<?import com.jfoenix.controls.JFXToggleButton?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="487.0" prefWidth="878.0" style="-fx-background-color: #2c3e50;" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="me.medox.altchecker.Main">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="487.0" prefWidth="878.0" style="-fx-background-color: #2c3e50;" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="me.medox.altchecker.Main">
     <children>
         <JFXButton buttonType="RAISED" layoutX="309.0" layoutY="423.0" onAction="#check" prefHeight="41.0" prefWidth="104.0" ripplerFill="#137560" style="-fx-background-color: #16a085;" text="CHECK" textFill="WHITE" />
         <JFXButton buttonType="RAISED" layoutX="588.0" layoutY="96.0" onAction="#openAltFileChooser" ripplerFill="#29333c" style="-fx-background-color: #2c3e50;" text="..." textFill="WHITE" />
@@ -37,5 +38,12 @@
         <JFXTextArea fx:id="bannedAltArea" editable="false" focusColor="#141f40" layoutX="444.0" layoutY="263.0" maxWidth="530.0" minWidth="348.0" prefHeight="140.0" prefWidth="348.0" promptText="Banned Alts..." style="-fx-text-fill: #7f8c8d;" stylesheets="@styles.css" unFocusColor="#0a2239" />
         <JFXButton layoutX="21.0" layoutY="137.0" mnemonicParsing="false" onAction="#checkProxys" prefHeight="26.0" prefWidth="202.0" ripplerFill="#2c3e50" text="Check Proxies" textFill="#1c9feb" />
         <JFXSlider fx:id="slider" layoutX="603.0" layoutY="436.0" min="1.0" prefHeight="15.0" prefWidth="254.0" value="25.0" />
+      <JFXToggleButton fx:id="useProxy" layoutX="26.0" layoutY="407.0" text="Use Proxies " textFill="#b9b9b9" />
+      <Label layoutX="26.0" layoutY="456.0" prefHeight="16.0" prefWidth="193.0" text="Proxies are buggy at the Moment!" textFill="WHITE">
+         <font>
+            <Font size="11.0" />
+         </font>
+      </Label>
+      <JFXButton layoutX="655.0" layoutY="138.0" onAction="#howToCheckWithoutProxies" text="How to Check without Proxies" textFill="#0bade8" />
     </children>
 </Pane>

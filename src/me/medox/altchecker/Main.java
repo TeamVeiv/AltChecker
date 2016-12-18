@@ -4,6 +4,7 @@ import ch.darknight.Check;
 import com.jfoenix.controls.JFXSlider;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.JFXToggleButton;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -26,10 +27,9 @@ import net.minecraft.util.Session;
 import org.controlsfx.control.textfield.TextFields;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.*;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.URL;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
@@ -61,6 +61,8 @@ public class Main extends Application implements Initializable {
     public JFXTextField threadsTextField;
     @FXML
     public JFXSlider slider;
+    @FXML
+    JFXToggleButton useProxy;
 
     private static int currentAlt;
     private static int currentProxy;
@@ -173,7 +175,9 @@ public class Main extends Application implements Initializable {
     public void check(ActionEvent event) {
        Runnable runnable = () ->{
            if (canCheck()) {
-               addAllProxys();
+               if(useProxy.isSelected()) {
+                   addAllProxys();
+               }
                workingAltsTextField.setText("0");
                mojangBannedAltsTextField.setText("0");
                bannedAltsTextField.setText("0");
@@ -194,9 +198,14 @@ public class Main extends Application implements Initializable {
                                if(currentProxy >= allProxyIPs.size()){
                                    currentProxy = 0;
                                }
-                               Proxy proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(allProxyIPs.get(currentProxy), allProxyPorts.get(currentProxy)));
+                               Proxy proxy = Proxy.NO_PROXY;
+                               if(useProxy.isSelected()){
+                                   proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(allProxyIPs.get(currentProxy), allProxyPorts.get(currentProxy)));
+                               }
                                System.out.println("Checking " + l +" with Proxy " + proxy.address());
-                               currentProxy++;
+                               if(useProxy.isSelected()) {
+                                   currentProxy++;
+                               }
                                Session session = Check.login(alt[0], alt[1], proxy);
                                if (session != null) {
                                    try {
@@ -236,6 +245,19 @@ public class Main extends Application implements Initializable {
            }
        };
        new Thread(runnable).start();
+    }
+
+    public void howToCheckWithoutProxies(ActionEvent event){
+        Runnable run = () ->{
+            try {
+                Desktop.getDesktop().browse(new URI("http://veiv.de/checkWithoutProxy.html"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+        };
+        new Thread(run).start();
     }
 
     public void addAllAlts() {
@@ -280,7 +302,7 @@ public class Main extends Application implements Initializable {
             Util.showPopUp("Please add an Alt-List");
             return false;
         }
-        if (proxyListTextField.getText().equals("")) {
+        if (proxyListTextField.getText().equals("") && useProxy.isSelected()) {
             Util.showPopUp("Add a Proxy-List or uncheck 'Use Proxy List'");
             return false;
         }
