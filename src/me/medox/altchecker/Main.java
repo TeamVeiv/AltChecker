@@ -17,6 +17,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import me.medox.altchecker.other.Util;
+import me.medox.altchecker.proxy.ProxyChecker;
+import me.medox.altchecker.proxy.ProxyGui;
 import org.controlsfx.control.textfield.TextFields;
 
 import javax.swing.*;
@@ -155,6 +157,10 @@ public class Main extends Application implements Initializable {
         if (chooser.getSelectedFile() != null) {
             proxyListTextField.setText(chooser.getSelectedFile().getAbsolutePath());
         }
+    }
+
+    public void checkProxys(ActionEvent event){
+        ProxyGui.getInstance().openGui();
     }
 
     public void check(ActionEvent event) {
