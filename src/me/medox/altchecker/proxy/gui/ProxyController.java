@@ -51,7 +51,7 @@ public class ProxyController {
                     checking = true;
                     progressBar.setProgress(0);
                     ArrayList<String> proxies;
-                    ProxyChecker proxyChecker = new ProxyChecker(new File(inFile.getText()), new File(outFile.getText()), progressBar);
+                    ProxyChecker proxyChecker = new ProxyChecker(new File(inFile.getText()), new File(outFile.getText()), progressBar, threadSlider);
                     proxies = proxyChecker.getWorkingProxies();
                     PrintWriter writer = new PrintWriter(outFile.getText());
                     for (int i = 0; i < proxies.size(); i++) {

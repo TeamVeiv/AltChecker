@@ -1,5 +1,6 @@
 package me.medox.altchecker.proxy;
 
+import com.jfoenix.controls.JFXSlider;
 import com.jfoenix.controls.JFXTextField;
 import javafx.application.Platform;
 import javafx.scene.PointLight;
@@ -24,18 +25,20 @@ public class ProxyChecker {
     private File file;
     private File savePath;
     private ProgressIndicator progressIndicator;
+    private JFXSlider slider;
 
     private static ExecutorService threadPool;
 
-    public ProxyChecker(File file, File savePath, ProgressIndicator progressIndicator) {
+    public ProxyChecker(File file, File savePath, ProgressIndicator progressIndicator, JFXSlider slider) {
         this.file = file;
         this.progressIndicator = progressIndicator;
+        this.slider = slider;
     }
 
     public ArrayList<String> getWorkingProxies() throws FileNotFoundException {
         double all = getAllProxys(file).size();
         System.out.println("All Proxies: " + all);
-        threadPool = Executors.newFixedThreadPool(5000);
+        threadPool = Executors.newFixedThreadPool((int)slider.getValue());
         ArrayList<String> list = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;

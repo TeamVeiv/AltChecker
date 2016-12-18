@@ -28,6 +28,7 @@ public class ProxyGui {
             scene = new Scene(parent);
             stage.setScene(scene);
             stage.setTitle("Proxy Checker");
+            stage.setResizable(false);
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();

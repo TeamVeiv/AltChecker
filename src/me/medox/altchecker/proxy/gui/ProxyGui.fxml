@@ -20,7 +20,7 @@
       <JFXButton buttonType="RAISED" layoutX="4.0" layoutY="189.0" onAction="#addOutFile" prefHeight="26.0" prefWidth="103.0" style="-fx-background-color: #7f8c8d;" text="Output File" />
       <JFXTextField fx:id="outFile" editable="false" labelFloat="true" layoutX="126.0" layoutY="186.0" maxWidth="299.0" minWidth="250.0" prefHeight="32.0" prefWidth="250.0" promptText="Save Dir" />
       <JFXButton buttonType="RAISED" layoutX="186.0" layoutY="440.0" onAction="#check" prefHeight="42.0" prefWidth="131.0" style="-fx-background-color: #7f8c8d;" text="Start Checking" />
-      <JFXSlider fx:id="threadSlider" layoutX="102.0" layoutY="281.0" max="5000.0" min="500.0" prefHeight="15.0" prefWidth="296.0" value="32.0" />
+      <JFXSlider fx:id="threadSlider" layoutX="102.0" layoutY="281.0" max="5000.0" min="2500.0" prefHeight="15.0" prefWidth="296.0" value="5000.0" />
       <Label layoutX="217.0" layoutY="305.0" text="Threads" />
       <ProgressIndicator fx:id="progressBar" layoutX="224.0" layoutY="375.0" progress="0.0" />
       <Label layoutX="91.0" layoutY="390.0" text="Working Proxies" />

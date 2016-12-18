@@ -1,8 +1,11 @@
 package me.medox.altchecker;
 
+import ch.darknight.Check;
+import com.jfoenix.controls.JFXSlider;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -19,13 +22,19 @@ import javafx.stage.WindowEvent;
 import me.medox.altchecker.other.Util;
 import me.medox.altchecker.proxy.ProxyChecker;
 import me.medox.altchecker.proxy.ProxyGui;
+import net.minecraft.util.Session;
 import org.controlsfx.control.textfield.TextFields;
 
 import javax.swing.*;
 import java.io.*;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by v3v on 16.12.16.
@@ -41,6 +50,8 @@ public class Main extends Application implements Initializable {
     @FXML
     public JFXTextArea altArea;
     @FXML
+    public JFXTextArea bannedAltArea;
+    @FXML
     public Label workingAltsTextField;
     @FXML
     public Label mojangBannedAltsTextField;
@@ -48,6 +59,8 @@ public class Main extends Application implements Initializable {
     public Label bannedAltsTextField;
     @FXML
     public JFXTextField threadsTextField;
+    @FXML
+    public JFXSlider slider;
 
     private static int currentAlt;
     private static int currentProxy;
@@ -56,10 +69,11 @@ public class Main extends Application implements Initializable {
     private static ArrayList<Integer> allProxyPorts = new ArrayList<>();
     private static boolean isChecking;
 
+    private static ExecutorService threadPool;
+
+
     /**
-     * 1.kupf
      * Window
-     * 2.alu
      */
     private static Group group;
     private static Stage stage;
@@ -68,9 +82,7 @@ public class Main extends Application implements Initializable {
 
 
     /**
-     * 1.gol
      * drag
-     * 2.Calci
      */
     private static double initX = 0;
     private static double initY = 0;
@@ -79,15 +91,6 @@ public class Main extends Application implements Initializable {
         launch();
     }
 
-
-    /**
-     *
-     * 1.silve
-     * @param stage_null
-     * 2.Magnesi
-     * @throws Exception
-     * 2.Zin
-     */
 
     @Override
     public void start(Stage stage_null) throws Exception {
@@ -159,35 +162,81 @@ public class Main extends Application implements Initializable {
         }
     }
 
-    public void checkProxys(ActionEvent event){
+    public void checkProxys(ActionEvent event) {
         ProxyGui.getInstance().openGui();
     }
 
-    public void check(ActionEvent event) {
-        if (canCheck()) {
-            workingAltsTextField.setText("0");
-            mojangBannedAltsTextField.setText("0");
-            bannedAltsTextField.setText("0");
-            allAlts.clear();
-            addAllAlts();
-            addAllProxys();
-            currentAlt = 0;
-            for (int i = 0; i < Integer.valueOf(threadsTextField.getText()); i++) {
-                new Thread(new AltLoginThread(serverTextField.getText(), workingAltsTextField, mojangBannedAltsTextField, bannedAltsTextField, true, allAlts, allProxyIPs, allProxyPorts, altArea, currentAlt, currentProxy)).start();
-                if (currentAlt <= allAlts.size()) {
-                    currentAlt++;
-                }
-                if (currentProxy <= allProxyIPs.size()) {
-                    currentProxy++;
-                } else {
-                    currentProxy = 0;
-                }
-            }
-            isChecking = false;
-        }
-    }
+    private static int working;
+    private static int banned;
+    private static int mojangBanned;
 
-    // boolean useProxy, ArrayList<String> allAlts, JFXTextField altField,int currentAlt, int currentProxy, int plusAlt, int plusProxy
+    public void check(ActionEvent event) {
+       Runnable runnable = () ->{
+           if (canCheck()) {
+               addAllProxys();
+               workingAltsTextField.setText("0");
+               mojangBannedAltsTextField.setText("0");
+               bannedAltsTextField.setText("0");
+               mojangBanned = 0;
+               working = 0;
+               banned = 0;
+               threadPool = Executors.newFixedThreadPool((int) slider.getValue());
+               String ip = serverTextField.getText().split(":")[0];
+               int port = serverTextField.getText().contains(":") ?
+                       Integer.valueOf(serverTextField.getText().split(":")[0]) : 25565;
+               try (BufferedReader reader = new BufferedReader(new FileReader(altListTextField.getText()))) {
+                   String line;
+                   while ((line = reader.readLine()) != null) {
+                       final String l = line;
+                       threadPool.execute(() -> {
+                           if (l.contains(":")) {
+                               final String alt[] = l.split(":");
+                               if(currentProxy >= allProxyIPs.size()){
+                                   currentProxy = 0;
+                               }
+                               Proxy proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(allProxyIPs.get(currentProxy), allProxyPorts.get(currentProxy)));
+                               System.out.println("Checking " + l +" with Proxy " + proxy.address());
+                               currentProxy++;
+                               Session session = Check.login(alt[0], alt[1], proxy);
+                               if (session != null) {
+                                   try {
+                                       if (Check.connect(ip, port, session, proxy)) {
+                                           working++;
+                                           altArea.setText(altArea.getText() + "\n" + l);
+                                       } else {
+                                           banned++;
+                                           bannedAltArea.setText(bannedAltArea.getText() + "\n" + l);
+                                       }
+                                   } catch (Exception e) {
+                                       banned++;
+                                       bannedAltArea.setText(bannedAltArea.getText() + "\n" + l);
+                                   }
+                               } else {
+                                   mojangBanned++;
+                               }
+                               Platform.runLater(() -> {
+                                   workingAltsTextField.setText(String.valueOf(working));
+                                   bannedAltsTextField.setText(String.valueOf(banned));
+                                   mojangBannedAltsTextField.setText(String.valueOf(mojangBanned));
+                               });
+                           }
+                       });
+                   }
+               } catch (FileNotFoundException e) {
+                   e.printStackTrace();
+               } catch (IOException e) {
+                   e.printStackTrace();
+               }
+               threadPool.shutdown();
+               try {
+                   threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+               } catch (InterruptedException e3) {
+                   e3.printStackTrace();
+               }
+           }
+       };
+       new Thread(runnable).start();
+    }
 
     public void addAllAlts() {
         try {
@@ -222,7 +271,7 @@ public class Main extends Application implements Initializable {
         }
     }
 
-    public void close(ActionEvent event){
+    public void close(ActionEvent event) {
         System.exit(0);
     }
 
@@ -235,13 +284,13 @@ public class Main extends Application implements Initializable {
             Util.showPopUp("Add a Proxy-List or uncheck 'Use Proxy List'");
             return false;
         }
-        if(serverTextField.getText().equals("")){
+        if (serverTextField.getText().equals("")) {
             Util.showPopUp("Select a Server!");
             return false;
         }
-        if(!isChecking){
+        if (!isChecking) {
             return true;
-        }else{
+        } else {
             Util.showPopUp("Already Checking!");
             return false;
         }
