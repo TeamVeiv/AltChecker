@@ -38,48 +38,54 @@ public class ProxyController {
     @FXML
     public ProgressIndicator progressBar;
 
+    public static Thread checkingThread;
+
     public void check(ActionEvent event) {
-        if(checking){
-            Util.showPopUp("Already Checking!");
-            return;
-        }
-        try {
-            if (!inFile.getText().equals("") && !outFile.getText().equals("")) {
-                checking = true;
-                progressBar.setProgress(0);
-                ArrayList<String> proxies;
-                ProxyChecker proxyChecker = new ProxyChecker(new File(inFile.getText()), new File(outFile.getText()) , progressBar);
-                proxies = proxyChecker.getWorkingProxies();
-                PrintWriter writer = new PrintWriter(outFile.getText());
-                for(int i = 0; i < proxies.size(); i++){
-                    writer.println(proxies.get(i));
-                }
-                writer.flush();
-                writer.close();
-                checking = false;
-            }else{
-                Util.showPopUp("Select a Proxy List and an Output Directory");
+        Runnable runnable = () -> {
+            if (checking) {
+                Util.showPopUp("Already Checking!");
                 return;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            try {
+                if (!inFile.getText().equals("") && !outFile.getText().equals("")) {
+                    checking = true;
+                    progressBar.setProgress(0);
+                    ArrayList<String> proxies;
+                    ProxyChecker proxyChecker = new ProxyChecker(new File(inFile.getText()), new File(outFile.getText()), progressBar);
+                    proxies = proxyChecker.getWorkingProxies();
+                    PrintWriter writer = new PrintWriter(outFile.getText());
+                    for (int i = 0; i < proxies.size(); i++) {
+                        writer.println(proxies.get(i));
+                    }
+                    writer.flush();
+                    writer.close();
+                    Util.showPopUp("Finished!");
+                    checking = false;
+                } else {
+                    Util.showPopUp("Select a Proxy List and an Output Directory");
+                    return;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        };
+        checkingThread = new Thread(runnable);
+        checkingThread.start();
     }
 
 
-
-    public void addInFile(ActionEvent event){
+    public void addInFile(ActionEvent event) {
         JFileChooser chooser = new JFileChooser();
         chooser.showDialog(new Panel(), "Select Proxy List");
-        if(chooser.getSelectedFile() != null){
+        if (chooser.getSelectedFile() != null) {
             inFile.setText(chooser.getSelectedFile().getAbsolutePath());
         }
     }
 
-    public void addOutFile(ActionEvent event){
+    public void addOutFile(ActionEvent event) {
         JFileChooser chooser = new JFileChooser();
         chooser.showDialog(new Panel(), "Select Output");
-        if(chooser.getSelectedFile() != null){
+        if (chooser.getSelectedFile() != null) {
             outFile.setText(chooser.getSelectedFile().getAbsolutePath());
         }
     }

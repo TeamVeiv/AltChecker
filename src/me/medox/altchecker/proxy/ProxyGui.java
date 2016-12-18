@@ -1,9 +1,12 @@
 package me.medox.altchecker.proxy;
 
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+import me.medox.altchecker.proxy.gui.ProxyController;
 
 import java.io.IOException;
 
