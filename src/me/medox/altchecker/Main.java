@@ -148,19 +148,25 @@ public class Main extends Application implements Initializable {
     }
 
     public void openAltFileChooser(ActionEvent event) {
-        JFileChooser chooser = new JFileChooser("Select Alt-List");
-        chooser.showOpenDialog(new JFrame());
-        if (chooser.getSelectedFile() != null) {
-            altListTextField.setText(chooser.getSelectedFile().getAbsolutePath());
-        }
+        Runnable runnable = () ->{
+            JFileChooser chooser = new JFileChooser("Select Alt-List");
+            chooser.showOpenDialog(new JFrame());
+            if (chooser.getSelectedFile() != null) {
+                altListTextField.setText(chooser.getSelectedFile().getAbsolutePath());
+            }
+        };
+        new Thread(runnable);
     }
 
     public void openProxyFileChooser(ActionEvent event) {
-        JFileChooser chooser = new JFileChooser("Select Alt-List");
-        chooser.showOpenDialog(new JFrame());
-        if (chooser.getSelectedFile() != null) {
-            proxyListTextField.setText(chooser.getSelectedFile().getAbsolutePath());
-        }
+        Runnable runnable = () ->{
+            JFileChooser chooser = new JFileChooser("Select Alt-List");
+            chooser.showOpenDialog(new JFrame());
+            if (chooser.getSelectedFile() != null) {
+                proxyListTextField.setText(chooser.getSelectedFile().getAbsolutePath());
+            }
+        };
+        new Thread(runnable).start();
     }
 
     public void checkProxys(ActionEvent event) {
@@ -177,6 +183,8 @@ public class Main extends Application implements Initializable {
        Runnable runnable = () ->{
            if (canCheck()) {
                isChecking = true;
+               allProxyIPs.clear();
+               allProxyPorts.clear();
                if(useProxy.isSelected()) {
                    addAllProxys();
                }
@@ -199,6 +207,7 @@ public class Main extends Application implements Initializable {
                        threadPool.execute(() -> {
                            if (l.contains(":")) {
                                final String alt[] = l.split(":");
+                               System.out.println("Proxy-Liste Size: " + allProxyIPs.size());
                                if(currentProxy >= allProxyIPs.size()){
                                    currentProxy = 0;
                                }

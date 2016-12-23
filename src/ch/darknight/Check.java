@@ -35,7 +35,7 @@ public class Check {
 
 	public static boolean connect(final String ip, final int port, Session session, Proxy proxy) {
 		if (Check.service == null) {
-			Check.service = (new YggdrasilAuthenticationService(proxy, UUID.randomUUID().toString())).createMinecraftSessionService();
+			Check.service = (new YggdrasilAuthenticationService(Proxy.NO_PROXY, UUID.randomUUID().toString())).createMinecraftSessionService();
 		}
 		try {
 			InetAddress var1 = InetAddress.getByName(ip);
@@ -44,7 +44,7 @@ public class Check {
 			networkManager.sendPacket(new C00Handshake(47, ip, port, EnumConnectionState.LOGIN));
 			networkManager.sendPacket(new C00PacketLoginStart(session.getProfile()));
 			while (((NetHandlerLoginClient_Modded) networkManager.getNetHandler()).isConnecting()) {
-				Thread.sleep(1000);
+				Thread.sleep(5000);
 			}
 			return ((NetHandlerLoginClient_Modded) networkManager.getNetHandler()).isConnected();
 		} catch (Exception e) {
