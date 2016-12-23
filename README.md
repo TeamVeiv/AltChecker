@@ -4,13 +4,18 @@ The Project is very young and we are working currently to make it better
 
 ---
 
-<img src="http://veiv.de/AltChecker.png">
+<img src="http://veiv.de/AltChecker_.png">
 
 
 ***About us***
 We are trying to give you the best design for our projects and to find the best algorithm 
 
 ---
+
+<h4>Downloads</h4>
+<a href="http:/veiv.de/AltChecker.zip">AltChecker v0.1</a>
+
+
 
 <h5>Coder</h5>
 <ul>
