@@ -29,7 +29,7 @@
         <Label fx:id="workingAltsTextField" layoutX="285.0" layoutY="238.0" prefHeight="16.0" prefWidth="65.0" text="0" textFill="WHITE" />
         <Label fx:id="bannedAltsTextField" layoutX="492.0" layoutY="238.0" prefHeight="16.0" prefWidth="65.0" text="0" textFill="WHITE" />
         <JFXButton buttonType="RAISED" cancelButton="true" layoutX="828.0" layoutY="15.0" onAction="#close" prefHeight="24.0" prefWidth="23.0" style="-fx-background-color: #34495e;" text="X" textFill="#dddddd" />
-        <JFXButton buttonType="RAISED" cancelButton="true" layoutX="524.0" layoutY="28.0" prefHeight="26.0" prefWidth="60.0" style="-fx-background-color: #34495e;" text="VEIV" textFill="#dddddd" />
+        <JFXButton buttonType="RAISED" cancelButton="true" layoutX="524.0" layoutY="28.0" prefHeight="26.0" prefWidth="60.0" style="-fx-background-color: #34495e;" text="TRAPHIIX" textFill="#dddddd" />
         <JFXButton buttonType="RAISED" layoutX="460.0" layoutY="423.0" onAction="#stopChecking" prefHeight="41.0" prefWidth="104.0" ripplerFill="#137560" style="-fx-background-color: #16a085;" text="STOP" textFill="WHITE" />
         <JFXTextArea layoutX="-63.0" layoutY="129.0" prefWidth="47.0" />
         <Label layoutX="699.0" layoutY="456.0" text="THREADS" textFill="#f8f8f8" />
